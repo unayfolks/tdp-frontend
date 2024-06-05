@@ -20,9 +20,7 @@
                 <v-table>
                     <thead>
                         <tr>
-                            <th>
-                                No
-                            </th>
+
                             <th class="text-left">
                                 Nama menu
                             </th>
@@ -32,14 +30,30 @@
                             <th class="text-left">
                                 Deskripsi
                             </th>
+                            <th class="text-center">
+                                Foto
+                            </th>
+                            <th class="text-center">
+                                Edit
+                            </th>
                         </tr>
                     </thead>
-                    <tbody> 
+                    <tbody>
                         <tr v-for="i in menumerchant" :key="i">
-                            <td>{{ i.id }}</td>
                             <td>{{ i.nama }}</td>
                             <td>{{ i.harga }}</td>
-                            <td>{{ i.deskripsi}}</td>
+                            <td>{{ i.deskripsi }}</td>
+                            <td>
+                                <img :src="i.foto_url" alt="Foto Menu" v-if="i.foto_url" width="100">
+                            </td>
+                            <td>
+                                <v-btn-toggle>
+                                    <v-btn size="x-small" @click="ModalEditMenu(i)"><v-icon icon="mdi-pencil"
+                                            color="blue-darken-2"></v-icon></v-btn>
+                                    <v-btn size="x-small" @click="HapusBarang(i.id)"><v-icon icon="mdi-eraser"
+                                            color="blue-darken-2"></v-icon></v-btn>
+                                </v-btn-toggle>
+                            </td>
                         </tr>
                     </tbody>
                 </v-table>
@@ -60,6 +74,13 @@
                                 <v-text-field v-model="menu.deskripsi" type="text" label="Deskripsi"
                                     required></v-text-field>
                             </v-col>
+                            <v-col cols="12" md="4" sm="6">
+                                <v-file-input accept="image/*" v-model="menu.foto" label="File input"
+                                    @change="onFileChange"></v-file-input>
+                            </v-col>
+                            <v-col cols="12" md="4" sm="6" v-if="previewImage">
+                                <img :src="previewImage" alt="Preview" width="200">
+                            </v-col>
                         </v-row>
                     </v-form>
                 </v-card-text>
@@ -67,7 +88,9 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn text="Tutup" variant="plain" @click="dialog = false"></v-btn>
-                    <v-btn color="primary" text="Simpan perubahan" variant="tonal" @click="addmenu"></v-btn>
+                    <v-btn v-if="simpan" color="primary" text="Simpan" variant="tonal" @click="addmenu"></v-btn>
+                    <v-btn v-if="!simpan" color="primary" text="Simpan perubahan" variant="tonal"
+                        @click="addmenu"></v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -87,44 +110,111 @@ export default {
                 foto: '',
                 kode_merchant: ''
             },
-            dialog:false,
-            menumerchant:[]
+            dialog: false,
+            menumerchant: [],
+            uploadedMenu: null,
+            api: process.env.VITE_APP_API_BASE_URL,
+            previewImage: null,
+            simpan: true
         }
     },
     methods: {
-        async addmenu() {
-            
-            try {
-                const menu = await axios.post(`http://localhost:8000/api/merchant/add/menu`, this.menu, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
-                    }
-                })
-                console.log(menu)
-                Swal.fire("Tersimpan!", "Success", "Profil berhasil diubah");
-            } catch (error) {
-                console.log(error)
+        onFileChange(event) {
+            const file = event.target.files[0];
+            console.log(file)
+            if (file) {
+                this.menu.foto = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.previewImage = e.target.result;
+                };
+                reader.readAsDataURL(file);
             }
         },
+        async addmenu() {
+            const formData = new FormData();
+            formData.append('nama', this.menu.nama);
+            formData.append('harga', this.menu.harga);
+            formData.append('deskripsi', this.menu.deskripsi);
+            formData.append('foto', this.menu.foto);
+            formData.append('kode_merchant', this.menu.kode_merchant);
+
+            try {
+                let api = this.api
+                let response;
+                if (this.menu.id) {
+                    formData.append('_method', 'PUT');
+                    response = await axios.post(`${api}/api/merchant/update/menu/${this.menu.id}`, formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            Authorization: `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
+                } else {
+                    response = await axios.post(`${api}/api/merchant/add/menu`, formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            Authorization: `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
+                }
+
+                console.log(response.data);
+                Swal.fire("Tersimpan!", "Menu berhasil disimpan", "success");
+                this.uploadedMenu = response.data.menu;
+                this.uploadedMenu.foto_url = response.data.foto_url;
+                // this.resetForm();
+            } catch (error) {
+                console.error(error);
+                Swal.fire("Gagal!", "Menu tidak dapat disimpan", "error");
+            }
+            // try {
+            //     const response = await axios.post(`http://localhost:8000/api/merchant/add/menu`, formData, {
+            //         headers: {
+            //             'Content-Type': 'multipart/form-data',
+            //             Authorization: `Bearer ${localStorage.getItem('token')}`
+            //         }
+            //     });
+            //     Swal.fire("Tersimpan!", "Menu berhasil ditambahkan", "success");
+            //     console.log(response.data.menu)
+            //     this.uploadedMenu = response.data.menu;
+            //     this.uploadedMenu.foto_url = response.data.foto_url;
+            // } catch (error) {
+            //     console.error(error);
+            //     Swal.fire("Gagal!", "Menu tidak dapat disimpan", "error");
+            // }
+        },
         ModalTambahMenu() {
+            this.simpan = true
             this.dialog = true
             this.menu.kode_merchant = this.user.id
         },
-        simpan_tambah(){
+        ModalEditMenu(i) {
+            this.simpan = false
+            this.dialog = true
+            console.log(i)
+            this.menu = { ...i };
+            this.previewImage = i.foto_url;
+        },
+        simpan_edit() {
             console.log(this.menu)
         },
-        async getmenu(){
+        async getmenu() {
             let id = this.user.id
+            let api = this.api
             try {
-                const mn = await axios.post(`http://localhost:8000/api/merchant/get/menu/${id}`, {
+                const response = await axios.post(`${api}/api/merchant/get/menu/${id}`, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('token')}`
                     }
                 })
-                const data = await mn
-                this.menumerchant = data.data
-
-                console.log(data)
+                // console.log(response.data.)
+                this.menumerchant = response.data.map(menu => {
+                    return {
+                        ...menu,
+                        foto_url: menu.foto ? `${api}/storage/fotos/${menu.foto}` : null
+                    };
+                });
             } catch (error) {
                 console.log(error)
             }
@@ -135,3 +225,10 @@ export default {
     },
 }
 </script>
+
+<style scoped>
+img {
+    max-width: 100%;
+    height: auto;
+}
+</style>
