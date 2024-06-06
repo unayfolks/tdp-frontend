@@ -20,7 +20,6 @@
                 <v-table>
                     <thead>
                         <tr>
-
                             <th class="text-left">
                                 Nama menu
                             </th>
@@ -98,6 +97,7 @@
 </template>
 <script>
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
     data() {
@@ -158,31 +158,18 @@ export default {
                         }
                     });
                 }
-
+                this.getmenu();
                 console.log(response.data);
+                this.dialog = false
                 Swal.fire("Tersimpan!", "Menu berhasil disimpan", "success");
                 this.uploadedMenu = response.data.menu;
                 this.uploadedMenu.foto_url = response.data.foto_url;
-                // this.resetForm();
+                this.resetForm();
             } catch (error) {
+                this.dialog = false
                 console.error(error);
                 Swal.fire("Gagal!", "Menu tidak dapat disimpan", "error");
             }
-            // try {
-            //     const response = await axios.post(`http://localhost:8000/api/merchant/add/menu`, formData, {
-            //         headers: {
-            //             'Content-Type': 'multipart/form-data',
-            //             Authorization: `Bearer ${localStorage.getItem('token')}`
-            //         }
-            //     });
-            //     Swal.fire("Tersimpan!", "Menu berhasil ditambahkan", "success");
-            //     console.log(response.data.menu)
-            //     this.uploadedMenu = response.data.menu;
-            //     this.uploadedMenu.foto_url = response.data.foto_url;
-            // } catch (error) {
-            //     console.error(error);
-            //     Swal.fire("Gagal!", "Menu tidak dapat disimpan", "error");
-            // }
         },
         ModalTambahMenu() {
             this.simpan = true
@@ -192,7 +179,6 @@ export default {
         ModalEditMenu(i) {
             this.simpan = false
             this.dialog = true
-            console.log(i)
             this.menu = { ...i };
             this.previewImage = i.foto_url;
         },
@@ -218,6 +204,18 @@ export default {
             } catch (error) {
                 console.log(error)
             }
+        },
+        resetForm() {
+            this.menu = {
+                id: null,
+                nama: '',
+                harga: '',
+                deskripsi: '',
+                foto: null,
+                kode_merchant: '4',
+                foto_url: null
+            };
+            this.previewImage = null;
         }
     },
     mounted() {
