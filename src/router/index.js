@@ -9,7 +9,7 @@ import RegisterCustomer from '../views/RegisterCustomer.vue'
 
 import DashboardCustomer from '../components/DashboardCustomer.vue'
 import DashboardMerchant from '../components/DashboardMerchant.vue'
-import Dashboard from '../components/Dashboard.vue'
+import Beranda from '../components/Dashboard.vue'
 
 import Trans from '../views/TransaksiView.vue'
 import ProfilMerchant from '../views/ProfilMerchant.vue'
@@ -24,55 +24,55 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: '/dashboard',
       name: 'home',
       component: HomeView,
       meta: { requiresAuth: true },
       children: [
         {
-          path: 'dashboard_merchant',
+          path: '/dashboard_merchant',
           name: 'home_merchant',
           component: DashboardMerchant,
           meta: { requiresRole: 'Merchant' }
         },
         {
-          path: 'profil_merchant',
+          path: '/profil_merchant',
           name: 'profil_merchant',
           component: ProfilMerchant,
           meta: { requiresRole: 'Merchant' }
         },
         {
-          path: 'menu_merchant',
+          path: '/menu_merchant',
           name: 'menu_merchant',
           component: MenuMerchant,
           meta: { requiresRole: 'Merchant' }
         },
         {
-          path: 'order_merchant',
+          path: '/order_merchant',
           name: 'order_merchant',
           component: OrderMerchant,
           meta: { requiresRole: 'Merchant' }
         },
         {
-          path: 'dashboard_customer',
+          path: '/dashboard_customer',
           name: 'home_customer',
           component: DashboardCustomer,
           meta: { requiresRole: 'Customer' }
         },
         {
-          path: 'profil_customer',
+          path: '/profil_customer',
           name: 'profil_customer',
           component: ProfilCustomer,
           meta: { requiresRole: 'Customer' }
         },
         {
-          path: 'pesan_katering',
+          path: '/pesan_katering',
           name: 'pesan_katering',
           component: PesanKatering,
           meta: { requiresRole: 'Customer' }
         },
         {
-          path: 'order_customer',
+          path: '/order_customer',
           name: 'order_customer',
           component: OrderCustomer,
           meta: { requiresRole: 'Customer' }
@@ -83,6 +83,11 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: Login
+    },
+    {
+      path: '/',
+      name: 'beranda',
+      component: Beranda
     },
     {
       path: '/register/merchant',
@@ -101,12 +106,12 @@ router.beforeEach((to, from, next) => {
   const userRole = JSON.parse(localStorage.getItem('user'))?.user_role;
 
   if (to.matched.some(record => record.meta.requiresAuth) && !loggedIn) {
-    next('/login');
+    next('/dashboard');
   } else if (to.matched.some(record => record.meta.requiresRole)) {
     if (userRole === to.meta.requiresRole) {
       next();
     } else {
-      next({ name: 'login' }); 
+      next({ name: 'beranda' }); 
     }
   } else {
     next();

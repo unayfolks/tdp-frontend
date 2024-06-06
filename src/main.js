@@ -15,7 +15,8 @@ import * as directives from 'vuetify/directives'
 import axios from 'axios';
 import '@mdi/font/css/materialdesignicons.css' // Ensure you are using css-loader
 import VueSweetalert2 from 'vue-sweetalert2';
-import 'sweetalert2/dist/sweetalert2.min.css';
+// import 'sweetalert2/dist/sweetalert2.min.css';
+
 import.meta.env;
 
 export default createVuetify({

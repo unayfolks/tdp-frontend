@@ -12,7 +12,7 @@
                     </template>
                 </v-toolbar>
             </v-card>
-            <v-navigation-drawer v-if="!Customer" v-model="drawer" :location="$vuetify.display.mobile ? 'left' : undefined" temporary
+            <v-navigation-drawer  v-if="!Customer" v-model="drawer" :location="$vuetify.display.mobile ? 'left' : undefined" temporary
                 class="bg-deep-purple  rounded" theme="dark">
                 <v-list color="transparent">
                     <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard">
@@ -27,17 +27,17 @@
                     <v-list-item prepend-icon="mdi-sale" title="Order">
                         <RouterLink to="/order_merchant">Daftar order</RouterLink>
                     </v-list-item>
+                    <v-list-item>
+                        <div class="pa-2">
+                            <v-btn block @click="logout">
+                                Logout
+                            </v-btn>
+                        </div>
+                    </v-list-item>
                 </v-list>
-                <template v-slot:append>
-                    <div class="pa-2">
-                        <v-btn block @click="logout">
-                            Logout
-                        </v-btn>
-                    </div>
-                </template>
             </v-navigation-drawer>
-            <v-navigation-drawer v-if="Customer" v-model="drawer" :location="$vuetify.display.mobile ? 'left' : undefined" temporary
-                class="bg-deep-purple  rounded" theme="dark">
+            <v-navigation-drawer  v-if="Customer" v-model="drawer" :location="$vuetify.display.mobile ? 'left' : 'top' " temporary
+                class="bg-deep-purple  rounded" theme="dark" >
                 <v-list color="transparent">
                     <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard">
                         <RouterLink to="/dashboard_customer">Dashboard</RouterLink>
@@ -51,14 +51,14 @@
                     <v-list-item prepend-icon="mdi-view-dashboard" title="Order">
                         <RouterLink to="/order_customer">Daftar pesanan</RouterLink>
                     </v-list-item>
+                    <v-list-item>
+                        <div class="pa-2">
+                            <v-btn block @click="logout">
+                                Logout
+                            </v-btn>
+                        </div>
+                    </v-list-item>
                 </v-list>
-                <template v-slot:append>
-                    <div class="pa-2">
-                        <v-btn block @click="logout">
-                            Logout
-                        </v-btn>
-                    </div>
-                </template>
             </v-navigation-drawer>
             <v-main>
                 <router-view></router-view>
@@ -75,6 +75,7 @@ export default {
             user: JSON.parse(localStorage.getItem('user')),
             drawer: false,
             group: null,
+            customer:false
         };
     },
     watch: {
@@ -105,7 +106,7 @@ export default {
         logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
-            this.$router.push('/login');
+            this.$router.push('/');
         }
     },
     mounted() {

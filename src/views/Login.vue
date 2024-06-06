@@ -4,6 +4,10 @@
         <v-col cols="12" sm="8" md="6" lg="4">
             <v-card class=" mx-auto " style="max-width: 500px;">
                 <v-toolbar color="deep-purple-accent-2" cards dark flat>
+                    <v-btn icon>
+                        <RouterLink to="/"><v-icon>mdi-arrow-left</v-icon></RouterLink>
+                        
+                    </v-btn>
                     <v-card-title class="text-h6 font-weight-regular">
                         Sign in
                     </v-card-title>
@@ -74,9 +78,9 @@ export default {
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('user', JSON.stringify(response.data.user));
                 let c = response.data.user.user_role
-                if(c == 'Customer'){
+                if (c == 'Customer') {
                     this.$router.push('/dashboard_customer');
-                }else{
+                } else {
                     this.$router.push('/dashboard_merchant');
                 }
             } catch (error) {

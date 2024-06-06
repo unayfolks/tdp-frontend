@@ -170,7 +170,6 @@ export default {
   computed: {
     barangfilter() {
       let sorted = this.brg;
-
       sorted = sorted.sort((a, b) => {
         return a.nama_barang.localeCompare(b.nama_barang);
       })
