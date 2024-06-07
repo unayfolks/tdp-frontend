@@ -93,6 +93,13 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <template>
+            <div>
+                <v-overlay :model-value="overlay" class="align-center justify-center">
+                    <v-progress-circular color="primary" size="64" indeterminate></v-progress-circular>
+                </v-overlay>
+            </div>
+        </template>
     </div>
 </template>
 <script>
@@ -115,7 +122,8 @@ export default {
             uploadedMenu: null,
             api: process.env.VITE_APP_API_BASE_URL,
             previewImage: null,
-            simpan: true
+            simpan: true,
+            overlay: false
         }
     },
     methods: {
@@ -132,6 +140,7 @@ export default {
             }
         },
         async addmenu() {
+            this.overlay = true
             const formData = new FormData();
             formData.append('nama', this.menu.nama);
             formData.append('harga', this.menu.harga);
@@ -158,6 +167,7 @@ export default {
                         }
                     });
                 }
+                this.overlay = false
                 this.getmenu();
                 console.log(response.data);
                 this.dialog = false
@@ -166,6 +176,7 @@ export default {
                 this.uploadedMenu.foto_url = response.data.foto_url;
                 this.resetForm();
             } catch (error) {
+                this.overlay = false
                 this.dialog = false
                 console.error(error);
                 Swal.fire("Gagal!", "Menu tidak dapat disimpan", "error");
@@ -188,6 +199,8 @@ export default {
         async getmenu() {
             let id = this.user.id
             let api = this.api
+            this.overlay = true
+
             try {
                 const response = await axios.post(`${api}/api/merchant/get/menu/${id}`, {
                     headers: {
@@ -201,8 +214,12 @@ export default {
                         foto_url: menu.foto ? `${api}/storage/fotos/${menu.foto}` : null
                     };
                 });
+                this.overlay = false
+
             } catch (error) {
                 console.log(error)
+                this.overlay = false
+
             }
         },
         resetForm() {

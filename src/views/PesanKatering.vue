@@ -145,38 +145,42 @@
                                 <v-btn icon="mdi-close" @click="dialog_checkout = false"></v-btn>
                             </v-toolbar-items>
                         </v-toolbar>
-                        <v-card class="ma-2">
+                        <v-card class="ma-2" style="overflow-y: auto; max-height: calc(100vh - 200px);">
                             <v-card-title>
                                 Pemesan
                             </v-card-title>
-                            <v-text-field v-model="trx.nama" class="ma-2" label="Nama pemesan" type="text"></v-text-field>
+                            <v-text-field v-model="trx.nama" class="ma-2" label="Nama pemesan"
+                                type="text"></v-text-field>
                             <v-text-field v-model="trx.tanggal" class="ma-2" label="Tanggal" type="date"></v-text-field>
                             <v-text-field v-model="trx.jam" class="ma-2" label="Waktu" type="time"></v-text-field>
+                            <v-textarea v-model="trx.alamat_kirim" class="ma-2" label="Alamat"></v-textarea>
                             <v-textarea v-model="trx.catatan" class="ma-2" label="Catatan"></v-textarea>
-                        </v-card>
-                        <v-card class="ma-2">
                             <v-card-title>
                                 Detail Pesanan
                             </v-card-title>
-                            <v-table>
-                                <thead>
-                                    <tr v-for="i in pesanan" :key="i">
-                                        <th>{{ i.nama }}</th>
-                                        <th>{{ i.harga }}</th>
-                                        <th>{{ i.jumlah }}</th>
-                                        <th>{{ i.subtotal }}</th>
-                                    </tr>
-                                    <tr>
-                                        <th></th>
-                                        <th></th>
-                                        <th>Total</th>
-                                        <td>{{ total() }}</td>
-                                    </tr>
-                                </thead>
-                            </v-table>
-                        </v-card>
-                        <v-card class="ma-2 align-center d-flex justify-center">
-                            <v-btn class="ma-2" color="blue" @click="simpan_transaksi">Buat Pesanan</v-btn>
+                            <v-card-item>
+                                <v-table>
+                                    <thead>
+                                        <tr v-for="i in pesanan" :key="i">
+                                            <th>{{ i.nama }}</th>
+                                            <th>{{ i.harga }}</th>
+                                            <th>{{ i.jumlah }}</th>
+                                            <th>{{ i.subtotal }}</th>
+                                        </tr>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th>Total</th>
+                                            <td>{{ total() }}</td>
+                                        </tr>
+                                    </thead>
+                                </v-table>
+                            </v-card-item>
+                            <v-card-item>
+                                <div class="ma-2 align-center d-flex justify-center">
+                                    <v-btn class="ma-2" color="blue" @click="simpan_transaksi">Buat Pesanan</v-btn>
+                                </div>
+                            </v-card-item>
                         </v-card>
                     </v-card>
                 </v-dialog>
@@ -196,11 +200,13 @@ export default {
             menu: [],
             pesanan: [],
             trx: {
+                kode_transaksi: '',
                 nama: '',
                 tanggal: '',
                 jam: '',
                 catatan: '',
-                kode_user:'',
+                kode_user: '',
+                alamat_kirim: '',
             },
             carimenu: '',
             jumlahpesanan: '',
@@ -233,20 +239,24 @@ export default {
         }
     },
     methods: {
-        async simpan_transaksi(){
+        async simpan_transaksi() {
             let objek = {
-                trx : this.trx,
-                detail : this.pesanan
+                trx: this.trx,
+                detail: this.pesanan
             }
             const api = this.api
+            this.overlay = true
             try {
-                const response = await axios.post(`${api}/api/customer/add/trx`, objek,{
+                const response = await axios.post(`${api}/api/customer/add/trx`, objek, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         Authorization: `Bearer ${localStorage.getItem('token')}`
                     }
                 })
                 console.log(response)
+                Swal.fire("Berhasil!", "Pesanan berhasi dibuat", "success");
+                this.dialog_checkout = false
+                this.overlay = false
             } catch (error) {
                 console.log(error)
             }
@@ -320,6 +330,11 @@ export default {
             const sudahAda = this.pesanan.some(item => item.id_menu === asd.id);
             console.log(sudahAda)
             if (!sudahAda) {
+                let now = new Date();
+                let a = this.user.id
+                let x = now.toISOString().slice(0, 10)
+                let y = now.toTimeString().slice(0, 5)
+                let z = `${a}-${y.replace(/:/g, '')}-${x.replace(/-/g, '')}`;
                 const objek = {
                     id: this.pesanan.length,
                     id_menu: asd.id,
@@ -329,9 +344,11 @@ export default {
                     jumlah: 1,
                     subtotal: asd.harga,
                     kode_user: this.user.id,
-                    nama_user: this.user.name
+                    nama_user: this.user.name,
+                    kode_transaksi: z
                 };
                 this.pesanan.push(objek);
+                this.trx.kode_transaksi = z
                 this.inisialisasijumlahorderan();
                 this.addnotif = true
                 this.textnotif = "menu berhasil ditambahkan"
@@ -356,7 +373,6 @@ export default {
             this.trx.jam = now.toTimeString().slice(0, 5)
             this.trx.nama = this.user.name
             this.trx.kode_user = this.user.id
-            
         }
     },
     mounted() {
