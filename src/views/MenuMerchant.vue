@@ -1,10 +1,10 @@
 <template>
-    <div>
+    <v-app>
         <v-card class="ma-2">
             <v-card-title class="my-2 mx-2">
                 <v-row>
                     <v-card-title>
-                        Daftar <Menu></Menu>
+                        Daftar Menu
                     </v-card-title>
                     <v-spacer></v-spacer>
                     <v-card-title>
@@ -49,7 +49,7 @@
                                 <v-btn-toggle>
                                     <v-btn size="x-small" @click="ModalEditMenu(i)"><v-icon icon="mdi-pencil"
                                             color="blue-darken-2"></v-icon></v-btn>
-                                    <v-btn size="x-small" @click="HapusBarang(i.id)"><v-icon icon="mdi-eraser"
+                                    <v-btn size="x-small"><v-icon icon="mdi-eraser"
                                             color="blue-darken-2"></v-icon></v-btn>
                                 </v-btn-toggle>
                             </td>
@@ -100,7 +100,7 @@
                 </v-overlay>
             </div>
         </template>
-    </div>
+    </v-app>
 </template>
 <script>
 import axios from 'axios';
@@ -173,7 +173,7 @@ export default {
                 this.dialog = false
                 Swal.fire("Tersimpan!", "Menu berhasil disimpan", "success");
                 this.uploadedMenu = response.data.menu;
-                this.uploadedMenu.foto_url = response.data.foto_url;
+                // this.uploadedMenu.foto_url = response.data.foto_url;
                 this.resetForm();
             } catch (error) {
                 this.overlay = false

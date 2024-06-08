@@ -1,30 +1,31 @@
 <template>
-    <v-layout>
+    <v-layout class="ma-0 pa-0">
         <v-app>
-            <v-card class="bg-deep-purple my-2 mx-2"  >
+            <v-card class="bg-deep-purple my-2 mx-2">
                 <v-toolbar color="transparent">
                     <template v-slot:prepend>
                         <v-btn icon="$menu" @click.stop="drawer = !drawer"></v-btn>
                     </template>
-                    <v-toolbar-title class="text-h6" >Welcome {{ user.user_role }} {{user.name}}</v-toolbar-title>
+                    <v-toolbar-title class="text-h6">Welcome {{ user.user_role }} {{ user.name }}</v-toolbar-title>
                     <template v-slot:append>
                         <v-btn icon="mdi-dots-vertical"></v-btn>
                     </template>
                 </v-toolbar>
             </v-card>
-            <v-navigation-drawer  v-if="!Customer" v-model="drawer" :location="$vuetify.display.mobile ? 'left' : undefined" temporary
-                class="bg-deep-purple  rounded" theme="dark">
+            <v-navigation-drawer v-if="!Customer" v-model="drawer"
+                :location="$vuetify.display.mobile ? 'left' : undefined" temporary class="bg-deep-purple  rounded"
+                theme="dark">
                 <v-list color="transparent">
                     <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard">
                         <RouterLink to="/dashboard_merchant">Dashboard</RouterLink>
                     </v-list-item>
-                    <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard">
+                    <v-list-item prepend-icon="mdi-account-tie" title="Dashboard">
                         <RouterLink to="/profil_merchant">Profil Merchant</RouterLink>
                     </v-list-item>
-                    <v-list-item prepend-icon="mdi-package-variant" title="Menu">
+                    <v-list-item prepend-icon="mdi-food" title="Menu">
                         <RouterLink to="/menu_merchant">Manajemen Menu </RouterLink>
                     </v-list-item>
-                    <v-list-item prepend-icon="mdi-sale" title="Order">
+                    <v-list-item prepend-icon="mdi-order-bool-descending-variant" title="Order">
                         <RouterLink to="/order_merchant">Daftar order</RouterLink>
                     </v-list-item>
                     <v-list-item>
@@ -36,19 +37,19 @@
                     </v-list-item>
                 </v-list>
             </v-navigation-drawer>
-            <v-navigation-drawer  v-if="Customer" v-model="drawer" :location="$vuetify.display.mobile ? 'left' : 'top' " temporary
-                class="bg-deep-purple  rounded" theme="dark" >
+            <v-navigation-drawer v-if="Customer" v-model="drawer" :location="$vuetify.display.mobile ? 'left' : 'top'"
+                temporary class="bg-deep-purple  rounded" theme="dark">
                 <v-list color="transparent">
                     <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard">
                         <RouterLink to="/dashboard_customer">Dashboard</RouterLink>
                     </v-list-item>
-                    <v-list-item prepend-icon="mdi-view-dashboard" title="Profil">
+                    <v-list-item prepend-icon="mdi-account-tie" title="Profil">
                         <RouterLink to="/profil_customer">Profil</RouterLink>
                     </v-list-item>
-                    <v-list-item prepend-icon="mdi-view-dashboard" title="Katering">
+                    <v-list-item prepend-icon="mdi-food" title="Katering">
                         <RouterLink to="/pesan_katering">Pesan</RouterLink>
                     </v-list-item>
-                    <v-list-item prepend-icon="mdi-view-dashboard" title="Order">
+                    <v-list-item prepend-icon="mdi-order-bool-descending-variant" title="Order">
                         <RouterLink to="/order_customer">Daftar pesanan</RouterLink>
                     </v-list-item>
                     <v-list-item>
@@ -68,6 +69,7 @@
 </template>
 <script>
 import { jwtDecode } from 'jwt-decode';
+import Swal from 'sweetalert2';
 
 export default {
     data() {
@@ -75,7 +77,7 @@ export default {
             user: JSON.parse(localStorage.getItem('user')),
             drawer: false,
             group: null,
-            customer:false
+            customer: false
         };
     },
     watch: {
@@ -96,10 +98,10 @@ export default {
                 const decodedToken = jwtDecode(token);
                 const currentTime = Date.now() / 1000;
                 if (decodedToken.exp < currentTime) {
-                    alert('Sesion telah habis, . . . ')
+                    Swal.fire("Informasi!", "session sudah habis, silahkan login kembali", "info");
                     localStorage.removeItem('token');
                     localStorage.removeItem('user');
-                    this.$router.push('/login');
+                    this.$router.push('/');
                 }
             }
         },
@@ -116,10 +118,10 @@ export default {
         }
         this.checkTokenExpiry();
         this.tokenCheckInterval = setInterval(this.checkTokenExpiry, 5000);
-        if(this.user.user_role == 'Customer'){
-            this.Customer= true
-        }else{
-            this.Customer= false
+        if (this.user.user_role == 'Customer') {
+            this.Customer = true
+        } else {
+            this.Customer = false
         }
     },
     beforeDestroy() {

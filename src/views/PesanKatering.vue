@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="ma-0 pa-0">
         <v-card class="ma-2">
             <v-card-title>
                 <v-row>
@@ -18,12 +18,14 @@
             </v-card-item>
         </v-card>
         <v-card class="ma-2">
-            <!-- <v-container> -->
             <v-row no-gutters>
                 <v-col class=" justify-space-around" cols="12" md="4" lg="2" v-for="asd in menu_filter" :key="asd">
                     <v-card max-width="4000" class="ma-2">
                         <v-img class="align-end text-white" height="200" :src="asd.foto_url" cover>
-                            <v-card-title>{{ asd.nama }}</v-card-title>
+                            <v-card-title
+                                :style="{ backgroundColor: 'rgba(0, 255, 255, 0.5)', color: 'black', fontWeight: 'bolder' }">
+                                {{ asd.nama }}
+                            </v-card-title>
                         </v-img>
                         <v-card-subtitle class="pt-4">
                             {{ asd.nama_perusahaan }}
@@ -45,7 +47,6 @@
                     </v-card>
                 </v-col>
             </v-row>
-            <!-- </v-container> -->
         </v-card>
         <v-dialog v-model="dialog" max-width="1000">
             <v-card prepend-icon="mdi-food-variant" :title="nama_modal">
@@ -236,7 +237,8 @@ export default {
                 );
             }
             return sortedmenu;
-        }
+        },
+        
     },
     methods: {
         async simpan_transaksi() {
@@ -257,6 +259,10 @@ export default {
                 Swal.fire("Berhasil!", "Pesanan berhasi dibuat", "success");
                 this.dialog_checkout = false
                 this.overlay = false
+                let pesan = this.pesanan.length
+                this.pesanan.splice(0, pesan)
+                this.$router.push('/order_customer');
+                this.inisialisasijumlahorderan();
             } catch (error) {
                 console.log(error)
             }

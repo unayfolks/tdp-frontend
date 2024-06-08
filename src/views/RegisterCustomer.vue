@@ -8,7 +8,7 @@
                         
                     </v-btn>
                     <v-card-title class="text-h6 font-weight-regular">
-                        Daftar sebagai customer
+                        Daftar
                     </v-card-title>
                     <v-spacer></v-spacer>
                 </v-toolbar>
