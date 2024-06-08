@@ -1,11 +1,11 @@
 <template>
     <v-container fluid class="d-flex justify-center align-center ma-0 pa-0" style="height: 100vh; width: 100vw;">
-        <v-img class="d-flex justify-center align-center ma-0" src="/src/assets/img/bakery.jpg" cover aspect-ratio="1" style="height: 100%; width: 100%;">
+        <v-img class="d-flex justify-center align-center ma-0" :src="'/src/assets/img/bakery.jpg'" cover
+            aspect-ratio="1" style="height: 100%; width: 100%;">
             <v-col cols="12">
                 <v-card class=" mx-auto " style="max-width: 500px;">
-                    <v-toolbar  cards dark flat>
-                        <v-img src="/src/assets/img/backgrunddrawercustomer.jpg" cover>
-
+                    <v-toolbar cards dark flat>
+                        <v-img :src="'/src/assets/img/backgrunddrawercustomer.jpg'" cover>
                             <v-card-title class="text-h6 font-weight-regular " color="black">
                                 <v-btn icon>
                                     <RouterLink to="/"><v-icon>mdi-arrow-left</v-icon></RouterLink>
@@ -76,28 +76,43 @@ export default {
     },
     methods: {
         async login() {
-            this.overlay = true
+            this.overlay = true;
             try {
                 const response = await api.post('/api/login', {
                     email: this.email,
                     password: this.password
                 });
+                this.overlay = false;
+                if (response.data && response.data.token && response.data.user) {
+                    localStorage.setItem('token', response.data.token);
+                    localStorage.setItem('user', JSON.stringify(response.data.user));
+                    const userRole = response.data.user.user_role;
 
-                this.overlay = false
-                localStorage.setItem('token', response.data.token);
-                localStorage.setItem('user', JSON.stringify(response.data.user));
-                let c = response.data.user.user_role
-                if (c == 'Customer') {
-                    this.$router.push('/dashboard_customer');
+                    if (userRole === 'Customer') {
+                        this.$router.push('/dashboard_customer');
+                    } else {
+                        this.$router.push('/dashboard_merchant');
+                    }
                 } else {
-                    this.$router.push('/dashboard_merchant');
+                    console.error('Invalid response structure', response.data);
+                    alert('Unexpected error occurred. Please try again.');
                 }
             } catch (error) {
-                this.overlay = false
-                console.error(error);
-                alert('Invalid credentials');
+                this.overlay = false;
+
+                if (error.response) {
+                    console.error('Error response:', error.response.data);
+                    alert('Invalid credentials');
+                } else if (error.request) {
+                    console.error('Error request:', error.request);
+                    alert('No response from server. Please try again later.');
+                } else {
+                    console.error('Error message:', error.message);
+                    alert('An error occurred. Please try again.');
+                }
             }
         }
+
     }
 };
 </script>
