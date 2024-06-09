@@ -1,11 +1,11 @@
 <template>
     <v-container fluid class="d-flex justify-center align-center ma-0 pa-0" style="height: 100vh; width: 100vw;">
-        <v-img class="d-flex justify-center align-center ma-0" :src="'/src/assets/img/bakery.jpg'" cover
+        <v-img class="d-flex justify-center align-center ma-0" :src="back1" cover
             aspect-ratio="1" style="height: 100%; width: 100%;">
             <v-col cols="12">
                 <v-card class=" mx-auto " style="max-width: 500px;">
                     <v-toolbar cards dark flat>
-                        <v-img :src="'/src/assets/img/backgrunddrawercustomer.jpg'" cover>
+                        <v-img :src="back2" cover>
                             <v-card-title class="text-h6 font-weight-regular " color="black">
                                 <v-btn icon>
                                     <RouterLink to="/"><v-icon>mdi-arrow-left</v-icon></RouterLink>
@@ -47,6 +47,8 @@
 
 <script>
 import api from '../services/api'
+import back1 from '@/assets/img/bakery.jpg';
+import back2 from '@/assets/img/backgrunddrawercustomer.jpg';
 
 export default {
     name: 'Login',
@@ -70,8 +72,10 @@ export default {
                 required: v => !!v || 'This field is required',
                 password: v => !!v || 'This field is required'
             },
-            overlay: false
+            overlay: false,
             // api: process.env.VITE_APP_API_BASE_URL
+            back1: back1,
+            back2: back2
         };
     },
     methods: {
