@@ -20,6 +20,7 @@ import ProfilCustomer from '../views/ProfilCustomer.vue'
 import PesanKatering from '../views/PesanKatering.vue'
 import OrderCustomer from '../views/OrderCustomer.vue'
 
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -99,6 +100,7 @@ const router = createRouter({
       name: 'register_customer',
       component: RegisterCustomer
     },
+
   ]
 })
 router.beforeEach((to, from, next) => {

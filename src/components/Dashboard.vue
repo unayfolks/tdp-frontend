@@ -8,8 +8,8 @@
                 </v-toolbar>
             </v-card>
         </v-sheet>
-        <v-sheet class="my-2 mx-2 rounded " style="box-shadow: 5px 5px black;">
-            <v-card class="bg-deep-purple ">
+        <v-sheet class="my-2 mx-2 rounded  "  style="box-shadow: 5px 5px black;">
+            <v-card class="bg-deep-purple " border="black xl">
                 <v-parallax class="align-center text-white" height="200" :src="imageUrl" cover>
                     <v-card-title class="overflow-hidden custom-font"
                         style="text-shadow: 2px 2px black; color: white; font-weight: bolder;">Selamat datang di
