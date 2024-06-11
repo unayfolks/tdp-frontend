@@ -7,7 +7,7 @@
                         <RouterLink to="/"><v-icon>mdi-arrow-left</v-icon></RouterLink>
                     </v-btn>
                     <v-card-title class="text-h6 font-weight-regular">
-                        Daftar sebagai merchant
+                        Daftar merchant
                     </v-card-title>
                     <v-spacer></v-spacer>
                 </v-toolbar>

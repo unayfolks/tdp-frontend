@@ -31,5 +31,8 @@ export default ({ mode }) => {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     },
+    build: {
+      chunkSizeWarningLimit: 1000 
+    }
   });
 };

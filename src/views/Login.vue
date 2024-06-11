@@ -1,45 +1,54 @@
 <template>
-    <v-container fluid class="d-flex justify-center align-center" style="height: 100vh;">
-        <!-- <v-row align="center" justify="center"> -->
-        <v-col cols="12" sm="8" md="6" lg="4">
-            <v-card class=" mx-auto " style="max-width: 500px;">
-                <v-toolbar color="deep-purple-accent-2" cards dark flat>
-                    <v-btn icon>
-                        <RouterLink to="/"><v-icon>mdi-arrow-left</v-icon></RouterLink>
-                        
-                    </v-btn>
-                    <v-card-title class="text-h6 font-weight-regular">
-                        Sign in
-                    </v-card-title>
-                    <v-spacer></v-spacer>
-                </v-toolbar>
-                <v-form ref="form" v-model="isValid" class="pa-4 pt-6">
-
-                    <v-text-field v-model="email" :rules="[rules.email]" color="deep-purple" label="Email address"
-                        type="email" variant="filled"></v-text-field>
-                    <v-text-field v-model="password" :rules="[rules.password, rules.length(6)]" color="deep-purple"
-                        counter="6" label="Password" style="min-height: 96px" type="password"
-                        variant="filled"></v-text-field>
-                </v-form>
-                <v-divider></v-divider>
-                <v-card-actions>
-                    <v-btn variant="text" @click="form.reset()">
-                        Clear
-                    </v-btn>
-                    <v-spacer></v-spacer>
-                    <v-btn :disabled="!isValid" :loading="isLoading" color="deep-purple-accent-4" @click="login">
-                        Submit
-                    </v-btn>
-                </v-card-actions>
-
-            </v-card>
-        </v-col>
-        <!-- </v-row> -->
+    <v-container fluid class="d-flex justify-center align-center ma-0 pa-0" style="height: 100vh; width: 100vw;">
+        <v-img class="d-flex justify-center align-center ma-0" :src="back1" cover
+            aspect-ratio="1" style="height: 100%; width: 100%;">
+            <v-col cols="12">
+                <v-card class=" mx-auto " style="max-width: 500px;">
+                    <v-toolbar cards dark flat>
+                        <v-img :src="back2" cover>
+                            <v-card-title class="text-h6 font-weight-regular " color="black">
+                                <v-btn icon>
+                                    <RouterLink to="/"><v-icon>mdi-arrow-left</v-icon></RouterLink>
+                                </v-btn>
+                                Sign in
+                            </v-card-title>
+                            <v-spacer></v-spacer>
+                        </v-img>
+                    </v-toolbar>
+                    <v-form ref="form" v-model="isValid" class="pa-4 pt-6">
+                        <v-text-field v-model="email" :rules="[rules.email]" color="deep-purple" label="Email address"
+                            type="email" variant="filled"></v-text-field>
+                        <v-text-field v-model="password" :rules="[rules.password, rules.length(6)]" color="deep-purple"
+                            counter="6" label="Password" style="min-height: 96px" type="password"
+                            variant="filled"></v-text-field>
+                    </v-form>
+                    <v-divider></v-divider>
+                    <v-card-actions>
+                        <v-btn variant="text" @click="form.reset()">
+                            Clear
+                        </v-btn>
+                        <v-spacer></v-spacer>
+                        <v-btn :disabled="!isValid" :loading="isLoading" color="deep-purple-accent-4" @click="login">
+                            Submit
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-col>
+            <template>
+                <div>
+                    <v-overlay :model-value="overlay" class="align-center justify-center">
+                        <v-progress-circular color="primary" size="64" indeterminate></v-progress-circular>
+                    </v-overlay>
+                </div>
+            </template>
+        </v-img>
     </v-container>
 </template>
 
 <script>
 import api from '../services/api'
+import back1 from '@/assets/img/bakery.jpg';
+import back2 from '@/assets/img/backgrunddrawercustomer.jpg';
 
 export default {
     name: 'Login',
@@ -63,31 +72,51 @@ export default {
                 required: v => !!v || 'This field is required',
                 password: v => !!v || 'This field is required'
             },
+            overlay: false,
             // api: process.env.VITE_APP_API_BASE_URL
-
+            back1: back1,
+            back2: back2
         };
     },
     methods: {
         async login() {
+            this.overlay = true;
             try {
                 const response = await api.post('/api/login', {
                     email: this.email,
                     password: this.password
                 });
+                this.overlay = false;
+                if (response.data && response.data.token && response.data.user) {
+                    localStorage.setItem('token', response.data.token);
+                    localStorage.setItem('user', JSON.stringify(response.data.user));
+                    const userRole = response.data.user.user_role;
 
-                localStorage.setItem('token', response.data.token);
-                localStorage.setItem('user', JSON.stringify(response.data.user));
-                let c = response.data.user.user_role
-                if (c == 'Customer') {
-                    this.$router.push('/dashboard_customer');
+                    if (userRole === 'Customer') {
+                        this.$router.push('/dashboard_customer');
+                    } else {
+                        this.$router.push('/dashboard_merchant');
+                    }
                 } else {
-                    this.$router.push('/dashboard_merchant');
+                    console.error('Invalid response structure', response.data);
+                    alert('Unexpected error occurred. Please try again.');
                 }
             } catch (error) {
-                console.error(error);
-                alert('Invalid credentials');
+                this.overlay = false;
+
+                if (error.response) {
+                    console.error('Error response:', error.response.data);
+                    alert('Invalid credentials');
+                } else if (error.request) {
+                    console.error('Error request:', error.request);
+                    alert('No response from server. Please try again later.');
+                } else {
+                    console.error('Error message:', error.message);
+                    alert('An error occurred. Please try again.');
+                }
             }
         }
+
     }
 };
 </script>

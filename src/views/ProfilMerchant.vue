@@ -1,27 +1,52 @@
 <template>
     <div>
         <v-card class="ma-2">
-            <v-card-title>Profil</v-card-title>
+            <v-card-title class="ma-2">
+                <v-row>
+                    <div class="ma-2">
+                        Profil
+                    </div>
+                    <v-spacer/>
+                    <v-btn class="ma-2" @click="EditProfil">Edit</v-btn>
+                </v-row>
+            </v-card-title>
             <v-card-item class="ma-2">
-                <v-row class="ma-2">
-                    <h3>Nama :</h3>
-                    <h3>{{ user.name }}</h3>
-                </v-row>
-                <v-row class="ma-2">
-                    <h3>Email :</h3>
-                    <h3>{{ user.email }}</h3>
-                </v-row>
-                <v-row class="ma-2">
-                    <h3>Nama Perusahaan :</h3>
-                    <h3>{{ user.nama_perusahaan }}</h3>
-                </v-row>
-                <v-row class="ma-2">
-                    <h3>Alamat :</h3>
-                    <h3>{{ user.alamat }}</h3>
-                </v-row>
-            </v-card-item>
-            <v-card-item>
-                <v-btn @click="EditProfil">Edit</v-btn>
+                <v-card class="ma-2">
+                        <v-row class="ma-2">
+                            <h3>Nama :</h3>
+                            <h3>{{ user.name }}</h3>
+                        </v-row>
+                </v-card>
+                <v-card class="ma-2">
+                        <v-row class="ma-2">
+                            <h3>Email :</h3>
+                            <h3>{{ user.email }}</h3>
+                        </v-row>
+                </v-card>
+                <v-card class="ma-2">
+                        <v-row class="ma-2">
+                            <h3>Alamat :</h3>
+                            <h3>{{ user.alamat }}</h3>
+                        </v-row>
+                </v-card>
+                <v-card class="ma-2">
+                        <v-row class="ma-2">
+                            <h3>No hp :</h3>
+                            <h3>{{ user.nohp }}</h3>
+                        </v-row>
+                </v-card>
+                <v-card class="ma-2">
+                        <v-row class="ma-2">
+                            <h3>Nama perusahaan / usaha :</h3>
+                            <h3>{{ user.nama_perusahaan }}</h3>
+                        </v-row>
+                </v-card>
+                <v-card class="ma-2">
+                        <v-row class="ma-2">
+                            <h3>Deskripsi :</h3>
+                            <h3>{{ user.deskripsi }}</h3>
+                        </v-row>
+                </v-card>
             </v-card-item>
         </v-card>
         <v-dialog v-model="dialog" max-width="600">
